@@ -1,0 +1,7 @@
+.
+├── core.bin -> /home/wrosner/test/FORTH/mecrisp/mecrisp-stellaris-2.4.8/stm32f103-ra/precompiled/mecrisp-stellaris-stm32f103-with-disassembler-m3.bin
+├── fth-mqtt -> /home/wrosner/test/FORTH/mecrisp/hackaday/hackaday_esp-14_power_meter/forth_system
+├── rnw -> /home/wrosner/test/FORTH/mecrisp/embello/rnw/
+└── tree.out
+
+2 directories, 2 files
