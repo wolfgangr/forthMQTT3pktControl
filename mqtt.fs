@@ -18,7 +18,7 @@
 	\ push every byte onto return stack, keep count
 	0 begin 1+ swap >r depth 1  = until 
 	\ emit every byte from return stack, keep count
-	begin 1 - r> emit dup 0= until drop 
+	begin 1 - r> emit 1000 us  dup 0= until drop 
 ;
 
 \ appends crc, transmits as slip-escaped
