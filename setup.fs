@@ -12,4 +12,6 @@ cornerstone <<callback-timer-lib>>
 include rnw/blink.fs
 cornerstone <<blink-test>>
 
+timed-init
+
 

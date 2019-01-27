@@ -22,3 +22,10 @@ include rel.fs
 : pv-loop BEGIN pv-check key? pv-loop-delay @ ms  UNTIL ;
 : pv-test BEGIN druck@ dup . dup dup pumpe? ventil? pvOK? key? 1000 ms UNTIL ;
 
+\ timed calling
+: pv-status. ." PV Status: " pv-status . cr ;  
+\ ' pv-status. 2000 1 call-every 
+' pv-check pv-loop-delay @ 0 call-every  ok.
+
+
+
