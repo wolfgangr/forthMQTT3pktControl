@@ -12,7 +12,11 @@ include rel.fs
 \ ===================
 : pumpe? ( druck --) limit-p-on @ < IF pumpen THEN ;     \    limit-p-off @  > IF pv-stop THEN ;
 : ventil? ( druck --) limit-v-on @ > IF ablassen THEN ;  \    limit-v-off @  < IF pv-stop THEN ;
-: pvOK? ( druck --) dup limit-p-off @  >  swap limit-v-off @  <  and IF pv-stop THEN ;
+\ : pvOK? ( druck --) dup limit-p-off @  >  swap limit-v-off @  <  and IF pv-stop THEN ;
+
+: isbetween ( low high test -- flag) tuck > -rot < and ;
+: pvOK? limit-p-off @  limit-v-off @ rot isbetween IF pv-stop THEN ;
+
 
 : pv-check druck@ dup dup pumpe? ventil? pvOK? ;
 : pv-loop BEGIN pv-check key? pv-loop-delay @ ms  UNTIL ;
