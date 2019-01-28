@@ -34,14 +34,14 @@
 \ maybe alginments, but for that we don't care
 \ convert to counted string stack format
 : memstr-counted ( addr -- c-addr length ) dup 1 cells + swap @ ;
-
+\ same for string mit byte length count as made by string,"
+: memstr-byte-cnt ( addr -- c-addr length ) dup 1  + swap c@ ;
 
 \ portable half words definition
 \ : halfws [ 1 cells shr ] * ;
 : halfws 2* ;
 
 
-\ 128 stringbuffer constant mybuf ..... will this work?
 \ allocates 1 cell + buf of size len chars
 \ keep end at halfword 0, maxlen at halfword +2 aka
 
@@ -51,18 +51,26 @@
 : stringbuf-rewind ( addr -- ) 0 swap h! ;			\ set write pointer to 0
 : stringbuf-0fill  ( addr -- ) dup stringbuf-len swap  stringbuf-dstart swap  0 fill ;  \ clear data area
 : stringbuf-clear  ( addr -- ) dup stringbuf-rewind stringbuf-0fill ;
+
+\ user space allocator
+\ 128 stringbuffer constant mybuf 
 : stringbuffer ( len -- addr ) stringbuf-allot dup stringbuf-clear ;
 
 \ put string lib compatible address & length to stack for reading
 : stringbuf-pos  ( addr -- pos ) h@ ;
 : stringbuf-string ( addr -- addr+x len ) dup stringbuf-dstart swap stringbuf-pos ;
-\ reset write pointer - silentyl ignore out of bounds
-: stringbuf-seek ( addr newpos --) dup 0 max 2 pick stringbuf-len min swap drop swap h! ;
+
 \ : stringbuf-full? ( addr --) dup  stringbuf-len swap stringbuf-pos <= ;
-: stringbuf-wheretowrite ( addr -- addr-free-byte ) stringbuf-string + ; 
 : stringbuf-freebytes ( addr --) dup  stringbuf-len swap stringbuf-pos - ;
 : stringbuf-full? ( addr --) stringbuf-freebytes 0 <= ;
+
+\ place write pointer - silentyl fix out of bounds condition
+: stringbuf-seek ( addr newpos --) dup 0 max 2 pick stringbuf-len min swap drop swap h! ;
+\ relative move write pointer
 : stringbuf-shift ( addr shift) over stringbuf-pos + stringbuf-seek ;
+
+\ get address for write operations
+: stringbuf-wheretowrite ( addr -- addr-free-byte ) stringbuf-string + ; 
 
 \ worker function for below
 : stringbuf-write-unchecked ( s1-addr sb-addr do-len -- )
