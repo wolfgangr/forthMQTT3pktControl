@@ -91,7 +91,7 @@
 : stringbuf-byte-app ( byte addr -- ) 
     dup stringbuf-full? 
     IF drop drop 
-    ELSE dup 1 stringbuf-shift stringbuf-wheretowrite c!   
+    ELSE dup stringbuf-wheretowrite c! 1 stringbuf-shift   
     THEN 
 ; 
 

@@ -32,7 +32,7 @@ myalign
 \ this is our companion 
 \ https://github.com/jeelabs/esp-link/blob/fe4f565fe83f05e402cc8d8ca3ceefbc39692a1f/serial/crc16.c
 \ it uses shortint, so we mask intermediates to 16 bit
-: crc+ ( running_sum new_byte -- ) 
+: crc+ ( old_running_sum new_byte -- new_running_sum ) 
   xor
   dup 8 rshift swap 8 lshift or
   $ffff and
@@ -46,27 +46,38 @@ myalign
 : sb-byte-app ( byte addr -- ) 
     dup stringbuf-full? 
     IF drop drop 
-    ELSE dup 1 stringbuf-shift stringbuf-wheretowrite c!   
+    ELSE dup stringbuf-wheretowrite c! 1 stringbuf-shift    
     THEN 
 ; 
 
 
-$80 stringbuffer constant SLIP-message
+
+: crc-assenble ( first afterlast -- hsb lsb )
+  0 -rot swap
+  DO  I crc+  LOOP 
+  dup $00ff and swap $ff00 and 8 rshift 
+  swap
+; 
 
 : SLIP-assemble ( buf-addr top-adr top-len msg-adr msg-len --)
   4 pick 
     ESPL-sync memstr-byte-cnt 2 pick stringbuf-write
-    SLIP_END over sb-byte-append
-    
+    SLIP_END over sb-byte-app
+    dup stringbuf-wheretowrite >r
     MQTT-preamble memstr-byte-cnt 2 pick stringbuf-write
 
   4 roll 4 roll rot stringbuf-write
   2 pick stringbuf-write
   MQTT-qos.and.retain memstr-byte-cnt 2 pick stringbuf-write
-  \ crt
-  ESPL-sync
+  dup stringbuf-wheretowrite
+  r>  swap       
+  2 pick sb-byte-app
+  over sb-byte-app
+  SLIP_END swap sb-byte-app
 ;
 
+\ TEst data
+$80 stringbuffer constant SLIP-message
 SLIP-message
 MQTT-washer.topic memstr-byte-cnt
 MQTT-msg.on memstr-byte-cnt
