@@ -37,13 +37,23 @@
 
 
 \ portable half words definition
-: halfws [ 1 cells shr ] * ;
+\ : halfws [ 1 cells shr ] * ;
+: halfws 2* ;
+
 
 \ 128 stringbuffer constant mybuf ..... will this work?
 \ allocates 1 cell + buf of size len chars
 \ keep end at halfword 0, maxlen at halfword +2 aka
 
-: stringbuffer ( len -- addr )  here 2dup 1 halfws + h! swap 2 halfws + allot ;  
+: stringbuf-allot  ( len -- addr )  here 2dup 1 halfws + h! swap 2 halfws + allot ;  
+: stringbuf-len    ( addr -- len ) 1 halfws + h@ ;		\ len field
+: stringbuf-dstart ( addr -- addr+x ) 2 halfws + ;		\ start  of data area
+: stringbuf-rewind ( addr -- ) 0 swap h! ;			\ set write pointer to 0
+: stringbuf-0fill  ( addr -- ) dup stringbuf-len swap  stringbuf-dstart swap  0 fill ;  \ clear data area
+: stringbuf-clear  ( addr -- ) dup stringbuf-rewind stringbuf-0fill ;
+: stringbuffer ( len -- addr ) stringbuf-allot dup stringbuf-clear ;
+
+
 
 
 
