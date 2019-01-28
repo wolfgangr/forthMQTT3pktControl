@@ -13,15 +13,15 @@
 create MQTT.msg.val.tplt
 hex
 	0c c,
-	mult-c," 03 00 23 23 23 00 "		\ data
-	mult-c," 02 00 03 00 00 00 " 		\ len of data
+	bytes," 03 00 23 23 23 00 "		\ data
+	bytes," 02 00 03 00 00 00 " 		\ len of data
 calign
 myalign
 
 \ patch value as 3 dec digits into string, given by address
-: pathch-value ( value address -- )
+: patch-value ( value address -- )
   swap 
-  #10 /mod .digit over c!
-  #10 /mod .digit over 1+ c!
-  .digit 2+ c!
+  #10 /mod swap .digit 2 pick 2+ c!
+  #10 /mod swap .digit 2 pick 1+ c!
+  .digit swap c!
 ;
