@@ -23,3 +23,7 @@
 : myalign here dup aligned swap - allot ; 
 : align myalign ;
 
+\ crude hack to display strings
+: show-memstring ( addr -- ) dup cr hex. dup @ hex. cr $40 dump ; 
+
+

@@ -46,29 +46,22 @@ align
 
 
 create MQTT-msg.on 
-\ create test1
-\ hex
   0c ,
   bytes," 02 00 6f 6e 00 00 "  \ "on"
-\  calign
   bytes," 02 00  02 00  00 00  "  \ len of data  
 calign
 align
 
 create MQTT-msg.off 
-\ create test2
   0c ,
   bytes," 03 00 6f 66 66 00 "  \ "off"
-\ calign 
   bytes," 02 00  03 00  00 00  "  \ len of data  
 calign
 align
 
 create MQTT-qos.and.retain 
-\ create test3
   0c ,
   bytes," 01 00 00 00 00 00 "  \ qos = 0
-\ calign 
   bytes," 01 00  00 00  00 00  "  \ retain = 0
 calign
 align
