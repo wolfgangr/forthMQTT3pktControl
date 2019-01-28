@@ -24,6 +24,9 @@
 : align myalign ;
 
 \ crude hack to display strings
-: show-memstring ( addr -- ) dup cr hex. dup @ hex. cr $40 dump ; 
+: memstr-show ( addr -- ) dup cr hex. dup @ hex. cr $40 dump ; 
+
+\ convert to counted string stack format
+: memstr-counted ( addr -- c-addr length ) dup 1 cells + swap @ ;
 
 
