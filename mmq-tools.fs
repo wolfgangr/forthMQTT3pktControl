@@ -53,7 +53,21 @@
 : stringbuf-clear  ( addr -- ) dup stringbuf-rewind stringbuf-0fill ;
 : stringbuffer ( len -- addr ) stringbuf-allot dup stringbuf-clear ;
 
+\ put string lib compatible address & length to stack for reading
+: stringbuf-string ( addr -- addr+x len ) dup stringbuf-dstart swap stringbuf-len ;
+\ reset write pointer - silentyl ignore out of bounds
+: stringbuf-seek ( addr newpos --) dup 0 min over stringbuf-len max swap h! ;
+: stringbuf-pos  ( addr -- pos ) h@ ;
+: stringbuf-full? ( addr --) dup  stringbuf-len swap stringbuf-pos >= ;
 
+\ append string s1 to stringbuf sb 
+: stringbuf-write ( s1-addr s1-len sb-addr -- ) 
+  dup stringbuf-pos 2 pick + 		( s1-addr s1-len sb-addr { sb-pos s1-len + } )
+  over stringbuf-len max		( s1-addr s1-len sb-addr { ..... sb_len max } )
+  over stringbuf-len swap - 		( s1-addr s1-len sb-addr { bytes-to.move } )
+  rot drop move
+;
+  
 
 
 
