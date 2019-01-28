@@ -25,3 +25,18 @@ myalign
   #10 /mod swap .digit 2 pick 1+ c!
   .digit swap c!
 ;
+
+
+\ prepare some test data
+40 stringbuffer constant mybuf  
+MQTT.msg.val.tplt  memstr-byte-cnt mybuf stringbuf-write 
+cr cr
+mybuf stringbuf-dump 
+cr cr
+
+#186 mybuf stringbuf-dstart 2+ 
+.s
+patch-value
+mybuf stringbuf-dump
+MQTT.msg.val.tplt memstr-byte-cnt memstr-hexbytes
+mybuf stringbuf-string memstr-hexbytes 
