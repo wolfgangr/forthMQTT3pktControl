@@ -58,16 +58,24 @@
 : stringbuf-string ( addr -- addr+x len ) dup stringbuf-dstart swap stringbuf-pos ;
 \ reset write pointer - silentyl ignore out of bounds
 : stringbuf-seek ( addr newpos --) dup 0 max 2 pick stringbuf-len min swap drop swap h! ;
-: stringbuf-full? ( addr --) dup  stringbuf-len swap stringbuf-pos <= ;
+\ : stringbuf-full? ( addr --) dup  stringbuf-len swap stringbuf-pos <= ;
+: stringbuf-wheretowrite ( addr -- addr-free-byte ) stringbuf-string + ; 
+: stringbuf-freebytes ( addr --) dup  stringbuf-len swap stringbuf-pos - ;
+: stringbuf-full? ( addr --) stringbuf-freebytes 0 <= ;
+: stringbuf-shift ( addr shift) over stringbuf-pos + stringbuf-seek ;
 
-\ append string s1 to stringbuf sb 
-: stringbuf-write ( s1-addr s1-len sb-addr -- ) 
-  dup stringbuf-pos 2 pick + 		( s1-addr s1-len sb-addr { sb-pos s1-len + } )
-  over stringbuf-len max		( s1-addr s1-len sb-addr { ..... sb_len max } )
-  over stringbuf-len swap - 		( s1-addr s1-len sb-addr { bytes-to.move } )
-  rot drop move
+\ worker function for below
+: stringbuf-write-unchecked ( s1-addr sb-addr do-len -- )
+  over stringbuf-wheretowrite 
+  -rot tuck
+  stringbuf-shift
+  move
 ;
-  
 
-
+\ safe call - protected agains overrun
+: stringbuf-write ( s1-addr s1-len sb-addr -- )
+  dup stringbuf-freebytes     \ do we have space?
+  rot  min  ( s1-addr sb-addr do-len -- )
+  stringbuf-write-unchecked
+;
 
