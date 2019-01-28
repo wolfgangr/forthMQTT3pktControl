@@ -87,6 +87,14 @@
   stringbuf-write-unchecked
 ;
 
+\ append one single byte
+: stringbuf-byte-app ( byte addr -- ) 
+    dup stringbuf-full? 
+    IF drop drop 
+    ELSE dup 1 stringbuf-shift stringbuf-wheretowrite c!   
+    THEN 
+; 
+
 \ =========== debug and output ==================
 
 \ wrapper for hexdump including start marker

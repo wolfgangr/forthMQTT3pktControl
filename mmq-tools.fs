@@ -27,6 +27,52 @@ myalign
 ;
 
 
+\ https://github.com/hexagon5un/hackaday_esp-14_power_meter/blob/master/forth_system/crc.fs
+\ CRC accumulator
+\ this is our companion 
+\ https://github.com/jeelabs/esp-link/blob/fe4f565fe83f05e402cc8d8ca3ceefbc39692a1f/serial/crc16.c
+\ it uses shortint, so we mask intermediates to 16 bit
+: crc+ ( running_sum new_byte -- ) 
+  xor
+  dup 8 rshift swap 8 lshift or
+  $ffff and
+  dup $ff00 and 4 lshift xor
+  $ffff and
+  dup 8 rshift 4 rshift xor 
+  dup $ff00 and 5 rshift xor
+;
+
+\ does not belong here
+: sb-byte-app ( byte addr -- ) 
+    dup stringbuf-full? 
+    IF drop drop 
+    ELSE dup 1 stringbuf-shift stringbuf-wheretowrite c!   
+    THEN 
+; 
+
+
+$80 stringbuffer constant SLIP-message
+
+: SLIP-assemble ( buf-addr top-adr top-len msg-adr msg-len --)
+  4 pick 
+    ESPL-sync memstr-byte-cnt 2 pick stringbuf-write
+    SLIP_END over sb-byte-append
+    
+    MQTT-preamble memstr-byte-cnt 2 pick stringbuf-write
+
+  4 roll 4 roll rot stringbuf-write
+  2 pick stringbuf-write
+  MQTT-qos.and.retain memstr-byte-cnt 2 pick stringbuf-write
+  \ crt
+  ESPL-sync
+;
+
+SLIP-message
+MQTT-washer.topic memstr-byte-cnt
+MQTT-msg.on memstr-byte-cnt
+
+
+
 \ prepare some test data
 40 stringbuffer constant mybuf  
 MQTT.msg.val.tplt  memstr-byte-cnt mybuf stringbuf-write 
