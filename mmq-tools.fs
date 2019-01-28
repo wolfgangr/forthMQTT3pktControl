@@ -46,7 +46,7 @@ myalign
 : sb-byte-app ( byte addr -- ) 
     dup stringbuf-full? 
     IF drop drop 
-    ELSE dup stringbuf-wheretowrite c! 1 stringbuf-shift    
+    ELSE dup 1 stringbuf-shift  stringbuf-wheretowrite 1- c!
     THEN 
 ; 
 
