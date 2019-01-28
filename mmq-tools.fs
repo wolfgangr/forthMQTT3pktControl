@@ -1,3 +1,5 @@
+: 460800baud 460800 baud USART1-BRR h! ;
+
 \ put string literal to Dictionary - nothing else
 \ string," some string to literalize"
 \ :  string," $22 parse dup IF string, ELSE 2drop THEN ;
@@ -26,7 +28,22 @@
 \ crude hack to display strings
 : memstr-show ( addr -- ) dup cr hex. dup @ hex. cr $40 dump ; 
 
+
+\ my favourite string format: 
+\ 1 full cell length, then the bytes - no pad or delim, 
+\ maybe alginments, but for that we don't care
 \ convert to counted string stack format
 : memstr-counted ( addr -- c-addr length ) dup 1 cells + swap @ ;
+
+
+\ portable half words definition
+: halfws [ 1 cells shr ] * ;
+
+\ 128 stringbuffer constant mybuf ..... will this work?
+\ allocates 1 cell + buf of size len chars
+\ keep end at halfword 0, maxlen at halfword +2 aka
+
+: stringbuffer ( len -- addr )  here 2dup 1 halfws + h! swap 2 halfws + allot ;  
+
 
 
