@@ -16,3 +16,10 @@
 
 \ don't forget to call calign afterwards
 
+
+\ align does not seem to work as intended???
+\ try my own ... aligned seems to do the job...
+
+: myalign here dup aligned swap - allot ; 
+: align myalign ;
+
