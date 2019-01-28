@@ -34,7 +34,7 @@
 \ maybe alginments, but for that we don't care
 \ convert to counted string stack format
 : memstr-counted ( addr -- c-addr length ) dup 1 cells + swap @ ;
-\ same for string mit byte length count as made by string,"
+\ same for string with byte length count as made by string,"
 : memstr-byte-cnt ( addr -- c-addr length ) dup 1  + swap c@ ;
 
 \ portable half words definition
@@ -86,4 +86,35 @@
   rot  min  ( s1-addr sb-addr do-len -- )
   stringbuf-write-unchecked
 ;
+
+\ =========== debug and output ==================
+
+\ wrapper for hexdump including start marker
+: stringbuf-dump ( addr --) 
+  cr
+  dup ." Start at " hex.
+  cr
+  dup #16 mod #3 * #11 + spaces
+  ." |-pos-|-len-|-data-> "
+  cr
+  stringbuf-string
+  swap 4 - swap
+  4 +
+  dump
+;
+
+\ print single byte to console
+: hexbyte #16 /mod .digit emit .digit emit ;
+
+\ niced loop over it
+: memstr-hexbytes ( addr size -- )
+  cr
+  over ." Addr: " hex.
+  dup ." - length: " hex.
+  cr
+  over + swap
+  DO I space c@ hexbyte LOOP 
+  cr
+;
+
 
