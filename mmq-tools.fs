@@ -52,7 +52,7 @@ myalign
 
 
 
-: crc-assenble ( first afterlast -- hsb lsb )
+: crc-assemble ( first afterlast -- hsb lsb )
   0 -rot swap
   DO  I crc+  LOOP 
   dup $00ff and swap $ff00 and 8 rshift 
@@ -71,29 +71,30 @@ myalign
   MQTT-qos.and.retain memstr-byte-cnt 2 pick stringbuf-write
   dup stringbuf-wheretowrite
   r>  swap       
+  crc-assemble
   2 pick sb-byte-app
   over sb-byte-app
   SLIP_END swap sb-byte-app
 ;
 
 \ TEst data
-$80 stringbuffer constant SLIP-message
-SLIP-message
-MQTT-washer.topic memstr-byte-cnt
-MQTT-msg.on memstr-byte-cnt
+\ $80 stringbuffer constant SLIP-message
+\ SLIP-message
+\ MQTT-washer.topic memstr-byte-cnt
+\ MQTT-msg.on memstr-byte-cnt
 
 
 
 \ prepare some test data
-40 stringbuffer constant mybuf  
-MQTT.msg.val.tplt  memstr-byte-cnt mybuf stringbuf-write 
-cr cr
-mybuf stringbuf-dump 
-cr cr
+\ 40 stringbuffer constant mybuf  
+\ MQTT.msg.val.tplt  memstr-byte-cnt mybuf stringbuf-write 
+\ cr cr
+\ mybuf stringbuf-dump 
+\ cr cr
 
-#186 mybuf stringbuf-dstart 2+ 
-.s
-patch-value
-mybuf stringbuf-dump
-MQTT.msg.val.tplt memstr-byte-cnt memstr-hexbytes
-mybuf stringbuf-string memstr-hexbytes 
+\ #186 mybuf stringbuf-dstart 2+ 
+\ .s
+\ patch-value
+\ mybuf stringbuf-dump
+\ MQTT.msg.val.tplt memstr-byte-cnt memstr-hexbytes
+\ mybuf stringbuf-string memstr-hexbytes 
