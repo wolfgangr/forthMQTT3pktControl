@@ -12,7 +12,7 @@
 
 create MQTT.msg.val.tplt
 hex
-	0c c,
+	$0c c,
 	bytes," 03 00 23 23 23 00 "		\ data
 	bytes," 02 00 03 00 00 00 " 		\ len of data
 calign
@@ -54,7 +54,8 @@ myalign
 
 : crc-assemble ( first afterlast -- hsb lsb )
   0 -rot swap
-  DO  I crc+  LOOP 
+  DO  I c@ crc+  LOOP 
+  \ dup cr ." CRC: " hex. cr
   dup $00ff and swap $ff00 and 8 rshift 
   swap
 ; 
@@ -76,6 +77,27 @@ myalign
   over sb-byte-app
   SLIP_END swap sb-byte-app
 ;
+
+\ simple test string for CRC
+: SLIP-tester ( buf-addr test-adr test-len --)
+  2 pick 
+    ESPL-sync memstr-byte-cnt 2 pick stringbuf-write
+    SLIP_END over sb-byte-app
+    dup stringbuf-wheretowrite >r
+    
+  2 pick stringbuf-write
+  dup stringbuf-wheretowrite
+  r>  swap       
+  crc-assemble
+  2 pick sb-byte-app
+  over sb-byte-app
+  SLIP_END swap sb-byte-app
+;
+
+
+
+
+
 
 \ TEst data
 \ $80 stringbuffer constant SLIP-message
