@@ -1,0 +1,103 @@
+Early test code for a mecrisp forth connected to ESP-Link
+Dont't expect those examples to do anyting of value.
+But maybe they will blow your house or shoot your mother in law - who knows?
+
+
+Goal in the end:
+simple double setpoint control
+https://en.wikipedia.org/wiki/Double-setpoint_control
+https://de.wikipedia.org/wiki/Dreipunktregler
+
+Which supposed to control the pressure in my heating system
+(as some next-to-hello-word example for more complicated IoT tasks)
+- read pressure analog in
+- agitate relief valve if pressure is too high
+- agitate fill pump if pressure is too low
+- send notice on any action by MQTT (mosquitto) to home automation (FHEM - planned)
+- query pressure and status by MQTT / home automation
+- set switch levels and maybe other constants by MQTT
+
+
+My setup
+- Blue pill STM32F103-whatever Controller (cheap China clone)
+- Mecrisp-Stellaris RA 2.4.8 for STM32F103 by Matthias Koch
+- Wemos D1 mini ESP8266 ESP-12 based china clone
+- esp-link v2.2.3 - 2016-06-21 21:58:48 - 1bcdc62
+- wlan and (not really simple) home network, of course
+- jeelabs embello folie v1 terminal program
+
+Basic steps:
+
+- flash ESP-Link to ESP  (esptool.py)
+- folie -p /dev/ttyUSB0 ... watch WiFI setup, connect to AP, set your SSID and switch to station mode
+- flash mecrisp to the bluepill
+- optional: play with FORTH over a serial line first
+- connect bluepill to ESP (same breadboard), with a cheap 5-V-mobile charger for power
+- attach a chinese-2-channel-relais-card and apotentiometer to simulate pressure input
+- implement a double-setpoint control which is a quite straightforward FORTH-exercise
+- digital-I/O, ADC, tasks.....
+- try to get MQTT running
+
+===========================================================================================================
+cutting edge per Tue Jan 29 22:19:11 CET 2019
+===========================================================================================================
+
+some useful links I remeber to have looked up more than once:
+
+Our "wireless USB-cable:"
+https://github.com/jeelabs/esp-link/tree/fe4f565fe83f05e402cc8d8ca3ceefbc39692a1f/serial
+https://github.com/jeelabs/esp-link/blob/fe4f565fe83f05e402cc8d8ca3ceefbc39692a1f/serial/crc16.c
+
+the workhorse hardware:
+http://wiki.stm32duino.com/index.php?title=Blue_Pill
+http://wiki.stm32duino.com/images/c/c1/Vcc-gnd.com-STM32F103C8-schematic.pdf
+https://embello.jeelabs.org/hardware/bluepill.html
+
+wiring 
+https://github.com/jeelabs/esp-link/blob/master/FLASHING.md#hardware-configuration-for-normal-operation
+Hardware detail: diode in reset line:
+https://jeelabs.org/article/1619a/
+
+really helpful FORTH-I/O libraries, tutorials, .... 
+https://embello.jeelabs.org/flib/
+https://github.com/jeelabs/embello/tree/master/explore/1608-forth
+https://github.com/jeelabs/embello/tree/master/explore/1608-forth/rnw
+
+you will learn to hate telnet, minicom, .... and use:
+https://github.com/jeelabs/embello/tree/master/tools/folie
+
+The FORTH to flash onto the BluePill:
+http://mecrisp.sourceforge.net/
+http://mecrisp.sourceforge.net/glossary.htm
+
+"Mecrisp-Stellaris Unofficial UserDoc 1.0 documentation"
+http://hightechdoc.net/mecrisp-stellaris/_build/html/glossary.html
+http://hightechdoc.net/mecrisp-stellaris/_build/html/words.html
+
+Some other FORTH reference I consider helpful
+https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/index.html#Top
+https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Word-Index.html#Word-Index
+http://lars.nocrew.org/forth2012/core.html
+
+A running example for ESP-Link with forth where I picked up much of MQTT low level info:
+https://hackaday.com/2017/02/13/hacking-on-the-weirdest-esp-module/
+https://github.com/hexagon5un/hackaday_esp-14_power_meter/blob/master/forth_system/mqtt.fs
+https://github.com/hexagon5un/hackaday_esp-14_power_meter/blob/master/forth_system/crc.fs
+https://github.com/hexagon5un/hackaday_esp-14_power_meter/blob/master/forth_system/messages.fs
+
+RTFS if you can't RTFM due to nonexitence
+This is a C-client that is delivered to implement MQTT over ESP-Lib
+So I have to implement a subset of its functionality
+https://github.com/jeelabs/el-client/tree/master/ELClient/examples/mqtt
+https://github.com/jeelabs/el-client/blob/master/ELClient/ELClient.h
+https://github.com/jeelabs/el-client/blob/master/ELClient/ELClient.cpp
+https://github.com/jeelabs/el-client/blob/master/ELClient/ELClientMqtt.h
+https://github.com/jeelabs/el-client/blob/master/ELClient/ELClientMqtt.cpp
+https://github.com/jeelabs/el-client/blob/master/ELClient/ELClientCmd.cpp
+
+
+https://en.wikipedia.org/wiki/Serial_Line_Internet_Protocol
+
+http://mqtt.org/2014/11/mqtt-v3-1-1-now-an-oasis-standard
+
+

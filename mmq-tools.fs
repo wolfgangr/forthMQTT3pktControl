@@ -60,16 +60,17 @@ myalign
   swap
 ; 
 
-: SLIP-assemble ( buf-addr top-adr top-len msg-adr msg-len --)
+\ assemble MQTT message, enclosed in SLIP frame
+: MQTT-assemble ( buf-addr top-adr top-len msg-adr msg-len --)
   4 pick 
-    ESPL-sync memstr-byte-cnt 2 pick stringbuf-write
+    ESPL-sync memstr-counted 2 pick stringbuf-write
     SLIP_END over sb-byte-app
     dup stringbuf-wheretowrite >r
-    MQTT-preamble memstr-byte-cnt 2 pick stringbuf-write
+    MQTT-preamble memstr-counted 2 pick stringbuf-write
 
   4 roll 4 roll rot stringbuf-write
   2 pick stringbuf-write
-  MQTT-qos.and.retain memstr-byte-cnt 2 pick stringbuf-write
+  MQTT-qos.and.retain memstr-counted 2 pick stringbuf-write
   dup stringbuf-wheretowrite
   r>  swap       
   crc-assemble
@@ -78,10 +79,10 @@ myalign
   SLIP_END swap sb-byte-app
 ;
 
-\ simple test string for CRC
-: SLIP-tester ( buf-addr test-adr test-len --)
+\ enclose arbitrary string into slip frame ( <END> <message> <CRC> <END> )
+: SLIP-message ( buf-addr msg-adr msg-len --)
   2 pick 
-    ESPL-sync memstr-byte-cnt 2 pick stringbuf-write
+    ESPL-sync memstr-counted 2 pick stringbuf-write
     SLIP_END over sb-byte-app
     dup stringbuf-wheretowrite >r
     
