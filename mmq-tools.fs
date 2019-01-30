@@ -81,19 +81,21 @@ myalign
 ;
 
 \ enclose arbitrary string into slip frame ( <END> <message> <CRC> <END> )
-: SLIP-message ( buf-addr msg-adr msg-len --)
-  2 pick 
-    ESPL-sync memstr-counted 2 pick stringbuf-write
-    SLIP_END over sb-byte-app
-    dup stringbuf-wheretowrite >r
-    
-  2 pick stringbuf-write
-  dup stringbuf-wheretowrite
+: SLIP-assemble ( buf-addr msg-adr msg-len --)
+  rot >r
+  \ (  msg-adr msg-len -- ... ) R: ( buf-addr -- ... )
+  ESPL-sync memstr-counted r@ stringbuf-write
+  SLIP_END r@ sb-byte-app
+  r@ dup stringbuf-wheretowrite >r
+  \ (  msg-adr msg-len buf-addr -- ... ) R: ( buf-addr crc-start -- ... )
+  stringbuf-write
+  1 rpick stringbuf-wheretowrite
+  \ ( crc-end -- ) R: ( buf-addr crc-start -- )
   r>  swap       
   crc-assemble
-  2 pick sb-byte-app
-  over sb-byte-app
-  SLIP_END swap sb-byte-app
+  r@ sb-byte-app
+  r@ sb-byte-app
+  SLIP_END r> sb-byte-app
 ;
 
 
