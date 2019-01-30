@@ -146,3 +146,8 @@ myalign
   dup stringbuf-clear 
   MQTT-preamble memstr-counted rot stringbuf-write
 ;
+
+\ static string appenders ( buf-adr -- )
+: MQTT-append-on      MQTT-msg.on         memstr-counted rot stringbuf-write ;
+: MQTT-append-off     MQTT-msg.off        memstr-counted rot stringbuf-write ;
+: MQTT-append-q.a.r   MQTT-qos.and.retain memstr-counted rot stringbuf-write ;

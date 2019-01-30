@@ -3,7 +3,10 @@ include mmq-tools.fs
 
 
 \ $40 stringbuffer constant mqtt-message
+\ mqtt-message MQTT-init 
 \ mqtt-message mymq.prefix mymq.valve MQTT-topic 
+\ mqtt-message stringbuf-dump 
+
 
 : mymq.prefix s" heating/pressure" ;
 
