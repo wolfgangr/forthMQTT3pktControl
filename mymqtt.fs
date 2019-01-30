@@ -1,6 +1,8 @@
 include mmq-const.fs
 include mmq-tools.fs
 
+\ should go to lib
+: my.stringbuf-type ( adr -- ) stringbuf-string type ; 
 
 $40 stringbuffer constant mqtt-message
 \ mqtt-message MQTT-init 

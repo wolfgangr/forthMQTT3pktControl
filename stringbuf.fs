@@ -107,6 +107,8 @@ compiletoflash
 
 \ =========== debug and output ==================
 
+: stringbuf-type ( adr -- ) stringbuf-string type ; 
+
 \ wrapper for hexdump including start marker
 : stringbuf-dump ( addr --) 
   cr
