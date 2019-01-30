@@ -141,4 +141,8 @@ myalign
   1 and IF 0 swap stringbuf-byte-app ELSE drop THEN
 ; 
   
-
+\ clear buffer and add generic mqtt pramble
+: MQTT-init ( buf-adr -- )
+  dup stringbuf-clear 
+  MQTT-preamble memstr-counted rot stringbuf-write
+;
