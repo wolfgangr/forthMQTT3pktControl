@@ -1,3 +1,6 @@
+
+compiletoflash
+
 : 460800baud 460800 baud USART1-BRR h! ;
 
 \ put string literal to Dictionary - nothing else
@@ -40,6 +43,13 @@
 \ portable half words definition
 \ : halfws [ 1 cells shr ] * ;
 : halfws 2* ;
+
+
+: lsb16 ( value -- lsb ) $ff and ;
+: hsb16 ( value -- hsb ) $ff00 and 8 rshift ;
+\ cave! reverse stack order for further processing !
+: littleendian16 ( value -- hsb lsb ) dup hsb16 swap lsb16 ;
+: bigendian16 ( value -- lsb hsb ) dup lsb16 swap hsb16 ;
 
 
 \ allocates 1 cell + buf of size len chars
@@ -91,7 +101,7 @@
 : stringbuf-byte-app ( byte addr -- ) 
     dup stringbuf-full? 
     IF drop drop 
-    ELSE dup stringbuf-wheretowrite c! 1 stringbuf-shift   
+    ELSE dup 1 stringbuf-shift  stringbuf-wheretowrite 1- c!
     THEN 
 ; 
 
@@ -126,3 +136,5 @@
 ;
 
 
+cornerstone <<<stringbuf-lib>>>
+compiletoram

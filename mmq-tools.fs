@@ -43,12 +43,13 @@ myalign
 ;
 
 \ does not belong here
-: sb-byte-app ( byte addr -- ) 
-    dup stringbuf-full? 
-    IF drop drop 
-    ELSE dup 1 stringbuf-shift  stringbuf-wheretowrite 1- c!
-    THEN 
-; 
+: sb-byte-app  stringbuf-byte-app ;
+\ : sb-byte-app ( byte addr -- ) 
+\   dup stringbuf-full? 
+\    IF drop drop 
+\    ELSE dup 1 stringbuf-shift  stringbuf-wheretowrite 1- c!
+\    THEN 
+\ ; 
 
 
 
