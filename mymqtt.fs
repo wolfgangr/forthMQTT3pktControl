@@ -70,16 +70,21 @@ $80 stringbuffer constant slip2-message
 mqtt-message test.msg
 slip1-message mqtt-message  stringbuf-string SLIP-assemble
 
-\ repeat old stuff:
-slip2-message MQTT-washer.topic memstr-counted MQTT-msg.off memstr-counted MQTT-assemble
-
-: mytype ( stringbuf-addr -- )
-  stringbuf-string 
-          \ ( string-adr len -- )
-  cr
-  over + swap
-  DO I c@ emit LOOP 
-  cr
-;  
 
 : mqtt-send slip1-message >r stringbuf-string r@ -rot SLIP-assemble r> stringbuf-type ; 
+
+slip1-message stringbuf-type 
+
+mqtt-message mymq.valve.off  
+mqtt-message mqtt-send 
+
+mqtt-message mymq.valve.on 
+mqtt-message mqtt-send 
+
+mqtt-message mymq.pump.on  
+mqtt-message mqtt-send 
+
+mqtt-message mymq.pump.off  
+mqtt-message mqtt-send 
+
+
