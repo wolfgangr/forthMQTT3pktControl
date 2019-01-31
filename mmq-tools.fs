@@ -83,6 +83,7 @@ myalign
 \ enclose arbitrary string into slip frame ( <END> <message> <CRC> <END> )
 : SLIP-assemble ( buf-addr msg-adr msg-len --)
   rot >r
+  r@ stringbuf-clear
   \ (  msg-adr msg-len -- ... ) R: ( buf-addr -- ... )
   ESPL-sync memstr-counted r@ stringbuf-write
   SLIP_END r@ sb-byte-app

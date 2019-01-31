@@ -81,3 +81,5 @@ slip2-message MQTT-washer.topic memstr-counted MQTT-msg.off memstr-counted MQTT-
   DO I c@ emit LOOP 
   cr
 ;  
+
+: mqtt-send slip1-message >r stringbuf-string r@ -rot SLIP-assemble r> stringbuf-type ; 
