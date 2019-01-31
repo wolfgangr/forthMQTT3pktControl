@@ -44,12 +44,7 @@ myalign
 
 \ does not belong here
 : sb-byte-app  stringbuf-byte-app ;
-\ : sb-byte-app ( byte addr -- ) 
-\   dup stringbuf-full? 
-\    IF drop drop 
-\    ELSE dup 1 stringbuf-shift  stringbuf-wheretowrite 1- c!
-\    THEN 
-\ ; 
+
 
 
 
@@ -155,6 +150,30 @@ myalign
   dup stringbuf-clear 
   MQTT-preamble memstr-counted rot stringbuf-write
 ;
+
+\ add a number of 0 ... 4 bytes, with 2 bytes length and padding, - no sanity check
+: MQTT-numberadd ( buf-addr number valid-bytes -- ) 
+  rot >r
+  r@ stringbuf-byte-app
+  0 r@ stringbuf-byte-app
+  /mod swap r@ stringbuf-byte-app
+  /mod swap r@ stringbuf-byte-app
+  /mod swap r@ stringbuf-byte-app
+  r> stringbuf-byte-app
+;      
+
+\ add data string and additional data lengt field, both 4-padded
+: MQTT-dataadd ( buf-addr string-addr len -- )
+  swap 2 pick swap 2 pick
+  ( buf-addr len buf-addr string-addr len -- )
+  MQTT-stringadd
+  ( buf-addr len -- )
+  \ reply length in 16 bit data_len field
+  2 MQTT-numberadd
+;
+
+
+
 
 \ static string appenders ( buf-adr -- )
 : MQTT-append-on      MQTT-msg.on         memstr-counted rot stringbuf-write ;
