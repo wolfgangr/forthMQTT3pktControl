@@ -44,6 +44,10 @@ include mmq-tools.fs
     MQTT-append-q.a.r
 ;
   
+: test.prefix s" home/basement" ;
+: test.wash   s" wasABCDher" ;
+
+: test.msg dup MQTT-init dup test.prefix test.wash MQTT-topic dup MQTT-append-off MQTT-append-q.a.r ;
   
   
 \ test rund
@@ -62,8 +66,18 @@ $80 stringbuffer constant slip2-message
 
 
 \ $80 stringbuffer constant slip-message  
-mqtt-message mymq.valve.off 
+\ mqtt-message mymq.valve.off 
+mqtt-message test.msg
 slip1-message mqtt-message  stringbuf-string SLIP-assemble
 
 \ repeat old stuff:
 slip2-message MQTT-washer.topic memstr-counted MQTT-msg.off memstr-counted MQTT-assemble
+
+: mytype ( stringbuf-addr -- )
+  stringbuf-string 
+          \ ( string-adr len -- )
+  cr
+  over + swap
+  DO I c@ emit LOOP 
+  cr
+;  
