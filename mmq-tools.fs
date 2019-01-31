@@ -12,9 +12,9 @@
 
 create MQTT.msg.val.tplt
 hex
-	$0c c,
-	bytes," 03 00 23 23 23 00 "		\ data
-	bytes," 02 00 03 00 00 00 " 		\ len of data
+  $0c c,
+  bytes," 03 00 23 23 23 00 "  \ data
+  bytes," 02 00 03 00 00 00 "  \ len of data
 calign
 myalign
 
