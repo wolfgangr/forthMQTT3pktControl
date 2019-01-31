@@ -114,7 +114,10 @@ myalign
   r@ stringbuf-write
   r> r>
     \ ( buf-addr string-len -- ... ) R: ( -- )
-  1 and IF 0 swap stringbuf-byte-app ELSE drop THEN
+  \ 1 and IF 0 swap stringbuf-byte-app ELSE drop THEN
+  \ pad to 32 bit = 4 bytes
+  BEGIN dup $3 and WHILE over 0 swap stringbuf-byte-app 1+ REPEAT 
+  drop drop
 ; 
 
 
@@ -140,7 +143,10 @@ myalign
   \ pad to even and balance stacks
   r> r>
     \ ( buf-addr string-len -- ... ) R: ( -- )
-  1 and IF 0 swap stringbuf-byte-app ELSE drop THEN
+  \ 1 and IF 0 swap stringbuf-byte-app ELSE drop THEN
+  \ pad to 32 bit = 4 bytes
+  BEGIN dup $3 and WHILE over 0 swap stringbuf-byte-app 1+ REPEAT 
+  drop drop
 ; 
   
 \ clear buffer and add generic mqtt pramble
