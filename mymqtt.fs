@@ -87,4 +87,10 @@ mqtt-message mqtt-send
 mqtt-message mymq.pump.off  
 mqtt-message mqtt-send 
 
+\ test data
 : foo s" foo bar tralala " ; 
+
+mqtt-message foo MQTT-dataadd
+
+mqtt-message 2 1 MQTT-numberadd  \ quos
+mqtt-message 1 1 MQTT-numberadd  \ retain

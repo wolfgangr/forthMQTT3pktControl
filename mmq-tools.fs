@@ -151,7 +151,7 @@ myalign
   MQTT-preamble memstr-counted rot stringbuf-write
 ;
 
-\ add a number of 0 ... 4 bytes, with 2 bytes length and padding, - no sanity check
+\ add a number of 0 ... 4 bytes, with 2 bytes length + 4 byte data field , - no sanity check
 : MQTT-numberadd ( buf-addr number valid-bytes -- ) 
   rot >r
   r@ stringbuf-byte-app
@@ -172,6 +172,22 @@ myalign
   \ reply length in 16 bit data_len field
   2 MQTT-numberadd
 ;
+
+\ add MQTT header with command, counter of additional data fields and some value . fixed length of 8 bytes
+: MQTT-cmdadd ( buf-addr cmd argc value -- )
+  3 roll >r
+  rot  \ ( argc value cmd -- ) R: ( buf-addr -- )
+  r@ stringbuf-byte-app
+  0 r@ stringbuf-byte-app
+  swap 
+  r@ stringbuf-byte-app
+  0 r@ stringbuf-byte-app
+  \ ( value -- ) R: ( buf-addr -- )
+  $100 /mod swap r@ stringbuf-byte-app
+  $100 /mod swap r@ stringbuf-byte-app
+  $100 /mod swap r@ stringbuf-byte-app
+  r> stringbuf-byte-app
+; 
 
 
 

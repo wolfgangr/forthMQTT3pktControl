@@ -66,5 +66,16 @@ create MQTT-qos.and.retain
 calign
 align
 
+\ increase parametrability
+\ https://github.com/jeelabs/el-client/blob/master/ELClient/ELClient.h#L29
 
+$0A constant CMD_MQTT_SETUP
+$0B constant CMD_MQTT_PUBLISH,
+$0C constant CMD_MQTT_SUBSCRIBE
+$0C constant CMD_MQTT_LWT
 
+\ interpretable dummy callback pointers
+$20315E20 constant caret1  \ <spc>^1<spc> in little endian
+$20325E20 constant caret2  \ <spc>^2<spc> in little endian
+$20335E20 constant caret3  \ <spc>^3<spc> in little endian
+$20345E20 constant caret4  \ <spc>^4<spc> in little endian
