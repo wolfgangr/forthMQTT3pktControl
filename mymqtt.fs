@@ -95,7 +95,7 @@ mqtt-message foo MQTT-dataadd
 mqtt-message 2 1 MQTT-numberadd  \ quos
 mqtt-message 1 1 MQTT-numberadd  \ retain
 
-\ test composed headers
+\ test composed headers - craft a MQTT setup
 mqtt-message stringbuf-clear  
 mqtt-message stringbuf-dump   
 mqtt-message CMD_MQTT_SETUP 4 0 MQTT-cmdadd  
@@ -106,17 +106,26 @@ mqtt-message caret2 4 MQTT-numberadd
 mqtt-message caret3 4 MQTT-numberadd 
 mqtt-message caret4 4 MQTT-numberadd 
 
+
+
 \ dummy callback functions
 : ^1 ." doing one "   ;  
 : ^2 ." doing two "   ;  
 : ^3 ." doing three " ;
 : ^4 ." doing four "  ; 
 
+\ supposed to be processd as a cmd=MQTT_SETUP
+mqtt-message mqtt-send
 
-
-
-
-
+\ =============================================0
+\ subscribe
+: subscribetopic s" foo/bar" ; 
+mqtt-message stringbuf-clear 
+mqtt-message CMD_MQTT_SUBSCRIBE 2 0 MQTT-cmdadd 
+mqtt-message subscribetopic MQTT-stringadd
+\ qos=1
+mqtt-message 1 1 MQTT-numberadd 
+mqtt-message mqtt-send
 
 
 

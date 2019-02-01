@@ -75,7 +75,8 @@ $0C constant CMD_MQTT_SUBSCRIBE
 $0C constant CMD_MQTT_LWT
 
 \ interpretable dummy callback pointers
-$20315E20 constant caret1  \ <spc>^1<spc> in little endian
-$20325E20 constant caret2  \ <spc>^2<spc> in little endian
-$20335E20 constant caret3  \ <spc>^3<spc> in little endian
-$20345E20 constant caret4  \ <spc>^4<spc> in little endian
+$0a315E0a constant caret1  \ <spc>^1<spc> in little endian
+$0a325E0a constant caret2  \ <spc>^2<spc> in little endian
+$0a335E0a constant caret3  \ <spc>^3<spc> in little endian
+$0a345E0a constant caret4  \ <spc>^4<spc> in little endian
+
