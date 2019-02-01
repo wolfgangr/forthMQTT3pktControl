@@ -156,9 +156,10 @@ myalign
   rot >r
   r@ stringbuf-byte-app
   0 r@ stringbuf-byte-app
-  /mod swap r@ stringbuf-byte-app
-  /mod swap r@ stringbuf-byte-app
-  /mod swap r@ stringbuf-byte-app
+  ( number -- )
+  $100 /mod swap r@ stringbuf-byte-app
+  $100 /mod swap r@ stringbuf-byte-app
+  $100 /mod swap r@ stringbuf-byte-app
   r> stringbuf-byte-app
 ;      
 

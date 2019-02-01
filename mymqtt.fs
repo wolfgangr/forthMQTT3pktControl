@@ -52,7 +52,7 @@ include mmq-tools.fs
   
 \ test rund
   
-$40 stringbuffer constant mqtt-message
+$60 stringbuffer constant mqtt-message
 $80 stringbuffer constant slip1-message
 $80 stringbuffer constant slip2-message 
 
@@ -87,4 +87,4 @@ mqtt-message mqtt-send
 mqtt-message mymq.pump.off  
 mqtt-message mqtt-send 
 
-
+: foo s" foo bar tralala " ; 
