@@ -87,6 +87,22 @@ mqtt-message mqtt-send
 mqtt-message mymq.pump.off  
 mqtt-message mqtt-send 
 
+
+\ =====================================================================
+
+hook-key @ Constant old-key 
+$80 stringbuffer constant mirror  
+
+: ?mirrline mirror  stringbuf-wheretowrite 1- c@ $0d = IF mirror dup stringbuf-dump stringbuf-clear THEN ;
+: mykey old-key execute dup mirror stringbuf-byte-app ?mirrline ; 
+: shark ['] mykey hook-key ! ;
+: unshark old-key hook-key ! ;
+
+
+
+\ =====================================================================
+
+
 \ test data
 : foo s" foo bar tralala " ; 
 
@@ -114,8 +130,10 @@ mqtt-message caret4 4 MQTT-numberadd
 : ^3 ." doing three " ;
 : ^4 ." doing four "  ; 
 
+shark
 \ supposed to be processd as a cmd=MQTT_SETUP
 mqtt-message mqtt-send
+unshark
 
 \ =============================================0
 \ subscribe
@@ -125,6 +143,8 @@ mqtt-message CMD_MQTT_SUBSCRIBE 2 0 MQTT-cmdadd
 mqtt-message subscribetopic MQTT-stringadd
 \ qos=1
 mqtt-message 1 1 MQTT-numberadd 
+
+shark
 mqtt-message mqtt-send
 
 
