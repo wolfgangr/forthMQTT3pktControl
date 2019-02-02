@@ -1,3 +1,5 @@
+include slip-esc.fs
+
 \ include stringbuf.fs
 \ cornerstone <<<stringbuf-lib>>>
 
@@ -94,6 +96,20 @@ myalign
   SLIP_END r> sb-byte-app
 ;
 
+\ send slip for arbitrary string over the line, 
+\ use escaped emit and unescaped delimiters, add crc16
+: SLIP-send ( msg-adr msg-len --)
+  SLIP_END sys-emit
+  over + swap 0 -rot ( 0 msg-adr+len msg-adr --)
+  DO
+    I c@ dup slip-emit crc+
+  LOOP
+  ( crc -- ) 
+  dup $00ff and swap $ff00 and 8 rshift 
+  swap ( crc-lsb crc-hsb --)
+  slip-emit slip-emit
+  SLIP_END sys-emit
+; 
 
 
 \ add a string in adr / len format to a buffer, prepending 16 bit little-endian counter and 16 bit padding

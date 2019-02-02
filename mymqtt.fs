@@ -1,4 +1,4 @@
-include slip-esc.fs
+\ include slip-esc.fs
 include mmq-const.fs
 include mmq-tools.fs
 
@@ -51,6 +51,10 @@ include mmq-tools.fs
 
 : test.msg dup MQTT-init dup test.prefix test.wash MQTT-topic dup MQTT-append-off MQTT-append-q.a.r ;
   
+
+' slip-dumper SLIP-handler-ptr !
+slip-ESC-activate 
+
   
 \ test rund
   
