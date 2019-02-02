@@ -16,7 +16,7 @@ $80 stringbuffer constant SLIP-message
 : sys-key sys-key-ptr  @ execute ;
 
 #10 constant SLIP-timeout
-: SLIP-timeout-error ." ERROR: SLIP timeout" quit ;
+: SLIP-timeout-error ." ERROR: SLIP timeout" cr quit exit ;
 
 : sys-key-timed
     key? false = IF  
@@ -41,7 +41,7 @@ $80 stringbuffer constant SLIP-message
   BEGIN
     sys-key-timed
     dup SLIP_END = IF SLIP-handler-ptr @ execute leave THEN
-    dup SLIP_ESC = IF drop sys-key THEN   \ unescapes
+    dup SLIP_ESC = IF drop sys-key-timed THEN   \ unescapes
     SLIP-message stringbuf-byte-app
   AGAIN
 ;
@@ -50,13 +50,12 @@ $80 stringbuffer constant SLIP-message
 \ processes received char
 \ unescapes SLIP_ESC
 : SLIP-key ( -- char )
-  sys-key 
-  CASE
+  sys-key   \ this is not timeout protected since it resembles standard 'key'
+  dup CASE
         \ read along and process until either EOT or SLIP_END
-    SLIP_END OF SLIP-read-message ENDOF  ############# FIXME return value????
-        \ silently ignore SLIP_ESC and return next char instead
-    SLIP_ESC OF sys-key ENDOF ############ FIXME gets dropped by ENDCASE!
-    0   \ TOS fodder for ENDCASE to discard in any other case
+    SLIP_END OF SLIP-read-message  0 swap ENDOF 
+        \ silently ignore SLIP_ESC and return exptected next char instead
+    SLIP_ESC OF sys-key-timed swap ENDOF 
   ENDCASE
 ;
 
@@ -74,6 +73,14 @@ $80 stringbuffer constant SLIP-message
   sys-emit-ptr @ hook-emit !
   sys-key-ptr  @ hook-key  !
 ;
+
+
+: slip-dumper
+  SLIP-message stringbuf-dump 
+  SLIP-message stringbuf-clear
+;
+
+' slip-dumper SLIP-handler-ptr !
 
   
 \ =============================================
