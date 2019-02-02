@@ -1,8 +1,8 @@
 
 $C0 constant SLIP_END
 $DB constant SLIP_ESC
-$DC constant SLIP_ESC_END
-$DD constant SLIP_ESC_ESC
+\ $DC constant SLIP_ESC_END
+\ $DD constant SLIP_ESC_ESC
 
 
 hook-key @ variable sys-key-ptr
@@ -40,7 +40,7 @@ $80 stringbuffer constant SLIP-message
 : SLIP-read-message 
   BEGIN
     sys-key-timed
-    dup SLIP_END = IF SLIP-handler-ptr @ execute leave THEN
+    dup SLIP_END = IF SLIP-handler-ptr @ execute exit THEN
     dup SLIP_ESC = IF drop sys-key-timed THEN   \ unescapes
     SLIP-message stringbuf-byte-app
   AGAIN
@@ -80,17 +80,8 @@ $80 stringbuffer constant SLIP-message
   SLIP-message stringbuf-clear
 ;
 
-' slip-dumper SLIP-handler-ptr !
+\ ' slip-dumper SLIP-handler-ptr !
 
   
-\ =============================================
-
-$80 stringbuffer constant mirror  
-false variable SLIP-process
-
-: ?mirrline mirror  stringbuf-wheretowrite 1- c@ $0d = IF mirror dup stringbuf-dump stringbuf-clear THEN ;
-: mykey old-key execute dup mirror stringbuf-byte-app ?mirrline ; 
-: shark ['] mykey hook-key ! ;
-: unshark old-key hook-key ! ;
 
 
