@@ -3,10 +3,10 @@
 \  constants for mqtt gateway impleemntation against esp-link
 \  https://github.com/jeelabs/el-client/blob/master/ELClient/ELClient.cpp
 \  https://en.wikipedia.org/wiki/Serial_Line_Internet_Protocol
-$C0 constant SLIP_END
-$DB constant SLIP_ESC
-$DC constant SLIP_ESC_END
-$DD constant SLIP_ESC_ESC
+\ $C0 constant SLIP_END
+\ $DB constant SLIP_ESC
+\ $DC constant SLIP_ESC_END
+\ $DD constant SLIP_ESC_ESC
 
 \ https://github.com/hexagon5un/hackaday_esp-14_power_meter/blob/master/forth_system/messages.fs
 

@@ -1,5 +1,6 @@
 include mmq-const.fs
 include mmq-tools.fs
+include slip-esc.fs
 
 \ should go to lib
 \ : my.stringbuf-type ( adr -- ) stringbuf-string type ; 
@@ -90,17 +91,6 @@ mqtt-message mqtt-send
 
 \ =====================================================================
 
-hook-key @ Constant old-key 
-$80 stringbuffer constant mirror  
-
-: ?mirrline mirror  stringbuf-wheretowrite 1- c@ $0d = IF mirror dup stringbuf-dump stringbuf-clear THEN ;
-: mykey old-key execute dup mirror stringbuf-byte-app ?mirrline ; 
-: shark ['] mykey hook-key ! ;
-: unshark old-key hook-key ! ;
-
-
-
-\ =====================================================================
 
 
 \ test data
