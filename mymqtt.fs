@@ -1,6 +1,7 @@
+include slip-esc.fs
 include mmq-const.fs
 include mmq-tools.fs
-include slip-esc.fs
+
 
 \ should go to lib
 \ : my.stringbuf-type ( adr -- ) stringbuf-string type ; 
@@ -120,12 +121,7 @@ mqtt-message caret4 4 MQTT-numberadd
 : ^3 ." doing three " ;
 : ^4 ." doing four "  ; 
 
-shark
-\ supposed to be processd as a cmd=MQTT_SETUP
-mqtt-message mqtt-send
 
-
-  unshark
   
   
 
@@ -138,7 +134,7 @@ mqtt-message subscribetopic MQTT-stringadd
 \ qos=1
 mqtt-message 1 1 MQTT-numberadd 
 
-shark
+
 mqtt-message mqtt-send
 
 
