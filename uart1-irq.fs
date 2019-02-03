@@ -78,3 +78,13 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
   pause uart1-ring ring# 0<> ;
 : uart1-irq-key ( -- c )  \ input read from interrupt-driven ring buffer
   begin uart1-irq-key? until  uart1-ring ring> ;
+
+hook-key @ constant polling-key
+hook-key? @ constant polling-key?
+  
+\ switch running REPL to use irq buffered input queue
+: uart1-irq_ulize  
+  ['] uart1-irq-key? hook-key? !
+  ['] uart1-irq-key  hook-key  !
+  uart1-irq-init
+;
