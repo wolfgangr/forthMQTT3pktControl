@@ -42,8 +42,8 @@ false variable SLIP-reading
 
 
 : sys-key-timed
-    key? false = IF  
-      SLIP-timeout @ ms key? false = IF
+    sys-key? false = IF  
+      SLIP-timeout @ ms sys-key? false = IF
         SLIP-timeout-error
     THEN THEN  
   sys-key
