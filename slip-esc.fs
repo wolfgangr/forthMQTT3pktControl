@@ -41,13 +41,7 @@ false variable SLIP-reading
 ;
 
 
-: sys-key-timed
-    sys-key? false = IF  
-      SLIP-timeout @ ms sys-key? false = IF
-        SLIP-timeout-error
-    THEN THEN  
-  sys-key
-; 
+
 
 
 : slip-dumper
@@ -60,11 +54,6 @@ false variable SLIP-reading
 
 
 
-: SLIP-key-unescape ( char -- char )
-  dup SLIP_ESC = sys-key? and IF 
-      sys-key-timed nip 
-  THEN
-;
 
 
 

@@ -9,8 +9,26 @@ $100 stringbuffer constant test-buf
   dup debug
 ;
 
-
+\ try to read another character
+\ send 0x0D , wait 10 ms, maybe wait another configurable time and then call an error
+: sys-key-timed
+    sys-key? not IF  
+       $0D sys-emit 
+       10 ms
+       sys-key? not IF 
+          SLIP-timeout @ ms sys-key? not IF
+            SLIP-timeout-error
+    THEN THEN THEN
+  sys-key
+; 
   
+: SLIP-key-unescape ( char -- char )
+  dup SLIP_ESC = sys-key? and IF 
+      sys-key-timed nip 
+  THEN
+;
+
+
 : SLIP-key \ ( -- char )
   sys-key
   BEGIN
