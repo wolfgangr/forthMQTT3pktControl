@@ -49,17 +49,17 @@ $100 stringbuffer constant test-buf
   BEGIN
     debug~   
     dup SLIP_END = IF
-      $23 emit
+      \ $23 emit
       \ drop
       SLIP-reading @ IF
               \ finish slip reader
-        $2d emit
+        \ $2d emit
         false SLIP-reading !
               \ process SLIP message
         SLIP-handler
       ELSE
               \ sart slip reader
-        $2b emit
+        \ $2b emit
         true SLIP-reading !
       THEN
       \ false \ AGAIN
@@ -71,7 +71,7 @@ $100 stringbuffer constant test-buf
            ( key-unescaped -- )     
     
       SLIP-reading @ IF 
-        $7C emit
+        \ $7C emit
         dup SLIP-message stringbuf-byte-app
         false \ AGAIN
       ELSE
@@ -83,7 +83,10 @@ $100 stringbuffer constant test-buf
     THEN
              ( char flag - )
              
-    over $0d = IF cr test-buf stringbuf-dump cr THEN
+    over $0d = IF 
+      cr test-buf stringbuf-dump cr 
+      
+    THEN
     \ dup IF
     \ ELSE
     \   nip sys-key-timed swap 
