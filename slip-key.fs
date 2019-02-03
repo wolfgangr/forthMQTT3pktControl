@@ -1,5 +1,5 @@
 
-\ $100 stringbuffer constant test-buf
+$100 stringbuffer constant test-buf
 \ $100 stringbuffer constant test-buf2
 
 : debug test-buf stringbuf-byte-app ;
@@ -56,6 +56,13 @@
   
 ; 
 
+
+: Slip-key2
+  sys-key
+  SLIP-key-unescape
+  dup SLIP-message stringbuf-byte-app
+  dup $0D = IF SLIP-handler THEN
+;
 
 \ ' sys-key hook-key ! 
 \ ' SLIP-key hook-key ! 
