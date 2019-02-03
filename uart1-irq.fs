@@ -21,13 +21,13 @@ $40013800  USART1
 
 
 : uart1. ( -- )
-  cr ." SR " USART2-SR @ h.4
-   ."  DR " USART2-DR @ h.4
-   ."  BRR " USART2-BRR @ h.4
-   ."  CR1 " USART2-CR1 @ h.4 
-   ."  CR2 " USART2-CR2 @ h.4
-   ."  CR3 " USART2-CR3 @ h.4
-   ."  GPTR " USART2-GPTR @ h.4 ;
+  cr ." SR " USART1-SR @ h.4
+   ."  DR "  USART1-DR @ h.4
+   ."  BRR " USART1-BRR @ h.4
+   ."  CR1 " USART1-CR1 @ h.4 
+   ."  CR2 " USART1-CR2 @ h.4
+   ."  CR3 " USART1-CR3 @ h.4
+   ."  GPTR " USART1-GPTR @ h.4 ;
 
    
 : uart1-baud ( n -- )  \ set baud rate assuming PCLK1 = sysclk/2
@@ -77,4 +77,4 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
 : uart1-irq-key? ( -- f )  \ input check for interrupt-driven ring buffer
   pause uart1-ring ring# 0<> ;
 : uart1-irq-key ( -- c )  \ input read from interrupt-driven ring buffer
-  begin uart-irq1-key? until  uart1-ring ring> ;
+  begin uart1-irq-key? until  uart1-ring ring> ;
