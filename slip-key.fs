@@ -1,21 +1,5 @@
 
 
-#1000 variable SLIP-timeout
-
-: SLIP-timeout-error 
-  false SLIP-reading !
-  ." ERROR: SLIP timeout" cr 
-  quit exit 
-;
-
-
-: sys-key-timed
-    key? false = IF  
-      SLIP-timeout @ ms key? false = IF
-        SLIP-timeout-error
-    THEN THEN  
-  sys-key
-; 
 
 
 
@@ -32,7 +16,7 @@
         $2b emit
         false SLIP-reading !
         \ process SLIP message
-        SLIP-handler-ptr @ execute
+        SLIP-handler
       ELSE
         \ sart slip reader
         $2d emit
@@ -43,7 +27,7 @@
     ELSE
    
       \ SLIP_ESC if ....  
-      \ inline SLIP-key-unescape 
+      SLIP-key-unescape 
       \ ( key-unescaped -- )     
     
       SLIP-reading @ IF 

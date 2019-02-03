@@ -8,13 +8,13 @@ $DB constant SLIP_ESC
 hook-key @ variable sys-key-ptr
 hook-key? @ variable sys-key?-ptr
 hook-emit @ variable sys-emit-ptr
-
+' nop variable SLIP-handler-ptr
 
 
 : sys-emit sys-emit-ptr @ execute ;
 : sys-key sys-key-ptr  @ execute ;
 : sys-key? sys-key?-ptr  @ execute ;
-
+: SLIP-handler SLIP-handler-ptr @ execute ;
 
 
 \ does ordinary emit, but prepends SLIP_ESC to SLIP_END and SLIP_ESC
@@ -27,16 +27,31 @@ hook-emit @ variable sys-emit-ptr
 ;
 
 
-' nop variable SLIP-handler-ptr
+
 $80 stringbuffer constant SLIP-message
 false variable SLIP-reading
 
 
 #1000 variable SLIP-timeout
-: SLIP-timeout-error ." ERROR: SLIP timeout" cr quit exit ;
+
+: SLIP-timeout-error 
+  false SLIP-reading !
+  ." ERROR: SLIP timeout" cr 
+  quit exit 
+;
+
+
+: sys-key-timed
+    key? false = IF  
+      SLIP-timeout @ ms key? false = IF
+        SLIP-timeout-error
+    THEN THEN  
+  sys-key
+; 
 
 
 : slip-dumper
+  cr ." SLIP buffer content:" cr
   SLIP-message stringbuf-dump 
   SLIP-message stringbuf-clear
 ;
@@ -47,7 +62,7 @@ false variable SLIP-reading
 
 : SLIP-key-unescape ( char -- char )
   dup SLIP_ESC = sys-key? and IF 
-      sys-key nip 
+      sys-key-timed nip 
   THEN
 ;
 
