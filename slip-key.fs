@@ -1,12 +1,32 @@
 
 
+#1000 variable SLIP-timeout
+
+: SLIP-timeout-error 
+  false SLIP-reading !
+  ." ERROR: SLIP timeout" cr 
+  quit exit 
+;
+
+
+: sys-key-timed
+    key? false = IF  
+      SLIP-timeout @ ms key? false = IF
+        SLIP-timeout-error
+    THEN THEN  
+  sys-key
+; 
+
+
+
 : SLIP-key \ ( -- char )
+  sys-key
   BEGIN
-    sys-key
+    \ sys-key
     \ dup $7b emit emit $7d emit 
     dup SLIP_END = IF
       $23 emit
-      drop
+      \ drop
       SLIP-reading @ IF
         \ finish slip reader
         $2b emit
@@ -23,12 +43,12 @@
     ELSE
    
       \ SLIP_ESC if ....  
-      inline SLIP-key-unescape 
+      \ inline SLIP-key-unescape 
       \ ( key-unescaped -- )     
     
       SLIP-reading @ IF 
         $7C emit
-        SLIP-message stringbuf-byte-app
+        dup SLIP-message stringbuf-byte-app
         false \ AGAIN
       ELSE
         \ if not in slip mode and no specil char, return char as 'key'
@@ -37,5 +57,10 @@
       
     THEN
 
+    dup IF
+    ELSE
+      drop sys-key-timed swap 
+    THEN
+    
   UNTIL
 ; 

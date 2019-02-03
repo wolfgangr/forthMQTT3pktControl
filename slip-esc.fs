@@ -41,7 +41,7 @@ false variable SLIP-reading
   SLIP-message stringbuf-clear
 ;
 
-\ ' slip-dumper SLIP-handler-ptr !
+' slip-dumper SLIP-handler-ptr !
 
 
 
@@ -66,7 +66,6 @@ false variable SLIP-reading
 
 
 
-\ ' slip-dumper SLIP-handler-ptr !
 
   
 
