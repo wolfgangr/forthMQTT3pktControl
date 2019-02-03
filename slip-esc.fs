@@ -27,6 +27,29 @@ hook-emit @ variable sys-emit-ptr
 ;
 
 
+' nop variable SLIP-handler-ptr
+$80 stringbuffer constant SLIP-message
+false variable SLIP-reading
+
+
+#1000 variable SLIP-timeout
+: SLIP-timeout-error ." ERROR: SLIP timeout" cr quit exit ;
+
+
+: slip-dumper
+  SLIP-message stringbuf-dump 
+  SLIP-message stringbuf-clear
+;
+
+\ ' slip-dumper SLIP-handler-ptr !
+
+
+
+: SLIP-key-unescape ( char -- char )
+  dup SLIP_ESC = sys-key? and IF 
+      sys-key nip 
+  THEN
+;
 
 
 

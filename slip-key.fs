@@ -1,33 +1,11 @@
-' nop variable SLIP-handler-ptr
-$80 stringbuffer constant SLIP-message
-false variable SLIP-reading
 
 
-#1000 variable SLIP-timeout
-: SLIP-timeout-error ." ERROR: SLIP timeout" cr quit exit ;
-
-
-: slip-dumper
-  SLIP-message stringbuf-dump 
-  SLIP-message stringbuf-clear
-;
-
-\ ' slip-dumper SLIP-handler-ptr !
-
-
-
-: SLIP-key-unescape ( char -- char )
-  dup SLIP_ESC = sys-key? and IF 
-      sys-key nip 
-  THEN
-;
-
-
-: SLIP-key ( -- char )
+: SLIP-key \ ( -- char )
   sys-key
   BEGIN
     dup SLIP_END = IF
-      drop
+    
+      \ drop
       SLIP-reading @ IF
         \ finish slip reader
         false SLIP-reading !
@@ -37,21 +15,28 @@ false variable SLIP-reading
         \ sart slip reader
         true SLIP-reading !
       THEN
-      true \ AGAIN
+      false \ AGAIN
+      
     ELSE
    
       \ SLIP_ESC if ....  
       inline SLIP-key-unescape 
-      ( key-unescaped -- )     
+      \ ( key-unescaped -- )     
     
       SLIP-reading @ IF 
-        SLIP-message stringbuf-byte-app
-        true \ AGAIN
+        dup SLIP-message stringbuf-byte-app
+        false \ AGAIN
       ELSE
         \ if not in slip mode and no specil char, return char as 'key'
-        false
+        true
       THEN
+      
     THEN
-    dup if sys-key swap \ make compiler's stack balance checker happy
-  WHILE
+    
+    dup IF
+    ELSE
+      drop sys-key swap \ make compiler's stack balance checker happy
+    THEN
+    
+  UNTIL
 ; 
