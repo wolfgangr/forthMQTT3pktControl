@@ -13,8 +13,8 @@ $100 stringbuffer constant test-buf
 \ send 0x0D , wait 10 ms, maybe wait another configurable time and then call an error
 : sys-key-timed
     sys-key? not IF  
-       $0D sys-emit 
-       10 ms
+       \ $11 sys-emit 
+       100 ms
        sys-key? not IF 
           SLIP-timeout @ ms sys-key? not IF
             SLIP-timeout-error
@@ -47,8 +47,8 @@ $100 stringbuffer constant test-buf
         $2b emit
         true SLIP-reading !
       THEN
-      false \ AGAIN
-      
+      \ false \ AGAIN
+      dup $0d = IF true ELSE false THEN
     ELSE
    
       SLIP-key-unescape 
@@ -60,6 +60,7 @@ $100 stringbuffer constant test-buf
         false \ AGAIN
       ELSE
         \ if not in slip mode and no specil char, return char as 'key'
+        \ dup 0x0d = if false else true
         true
       THEN
       
