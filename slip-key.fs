@@ -63,7 +63,8 @@ $100 stringbuffer constant test-buf
         true SLIP-reading !
       THEN
       \ false \ AGAIN
-      dup $0d = IF true ELSE false THEN
+      \ dup $0d = IF true ELSE false THEN
+      false
     ELSE
    
       SLIP-key-unescape 
@@ -74,13 +75,15 @@ $100 stringbuffer constant test-buf
         dup SLIP-message stringbuf-byte-app
         false \ AGAIN
       ELSE
-        \ if not in slip mode and no specil char, return char as 'key'
+        \ if not in slip mode and no special char, return char as 'key'
         \ dup 0x0d = if false else true
         true
       THEN
       
     THEN
              ( char flag - )
+             
+    over $0d = IF cr test-buf stringbuf-dump cr THEN
     \ dup IF
     \ ELSE
     \   nip sys-key-timed swap 
