@@ -46,10 +46,10 @@ $40013800  USART1
 \ we have assembler routines in the core aka serial-key etc
 \ and want to implement irq-based handlers in the end
 
-: uart1-key? ( -- f ) pause 1 5 lshift USART2-SR bit@ ;
-: uart1-key ( -- c ) begin uart-key? until  USART2-DR @ ;
-: uart1-emit? ( -- f ) pause 1 7 lshift USART2-SR bit@ ;
-: uart1-emit ( c -- ) begin uart-emit? until USART2-DR ! ; 
+: uart1-key? ( -- f ) pause 1 5 lshift USART1-SR bit@ ;
+: uart1-key ( -- c ) begin uart-key? until  USART1-DR @ ;
+: uart1-emit? ( -- f ) pause 1 7 lshift USART1-SR bit@ ;
+: uart1-emit ( c -- ) begin uart-emit? until USART1-DR ! ; 
   
   
 \ ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
