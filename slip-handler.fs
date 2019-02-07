@@ -68,7 +68,23 @@ false variable SLIP-overrun
 ;
 
 \ toggle false<->true in address e.g variable
-: toggle ( addr -- ) dup @ 0= swap ! ;
+\ : ~! ( addr -- ) dup @ 0= swap ! ;
+
+\ ######################
+\ ( buffer offset -- addr ) get address relative to ring buffer write pos
+\ ..... - len  .... len byte
+\ ..... - len +1 ... flag byte
+\ https://github.com/jeelabs/embello/blob/master/explore/1608-forth/flib/any/ring.fs#L4
+
+: ring-poker ( ring-addr 1|2 offset -- byte-addr)
+  swap 2 pick + @ + ( ring-addr raw-offset -- )
+  over @ and  ( ring-addr real-offset -- )
+  +
+;
+
+\ len is at start -2, flag is at start -1
+: SLIP-current-len-addr  ( -- adr ) SLIP-ring 1 -2 SLIP-msg-count - ring-poker ;
+: SLIP-current-flag-addr ( -- adr ) SLIP-ring 1 -1 SLIP-msg-count - ring-poker ;
 
 : SLIP-RX-irq-handler ( -- )
   \  read right from bare metal
@@ -83,9 +99,9 @@ false variable SLIP-overrun
     exit
   then
   
-  \  do we have a new escape?
+  \  check for new escape?
   dup SLIP_ESC = if 
-    SLIP-escaped toggle
+    true SLIP-escaped !
     drop exit
   then 
   
@@ -109,7 +125,7 @@ false variable SLIP-overrun
     drop exit
   then
   
-  \ nothing special
+  \ nothing special - feed char to the current buffer
   SLIP-status if
     SLIP-write-to-SLIP
     1 SLIP-msg-count +!
