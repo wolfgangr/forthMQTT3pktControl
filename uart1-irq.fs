@@ -91,7 +91,7 @@ UART1-TX-buffer-size 4 + buffer: uart1-TX-ring
 : uart1-TX-irq-disable 7 bit USART1-CR1 bic! ;
  
 : uart1-TX-irq-handler
-  uart1-RX-ring dup ring# 0<> if 
+  uart1-TX-ring dup ring# 0<> if 
     ring> sys-emit 
   else 
     uart1-TX-irq-disable 
@@ -110,6 +110,7 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
 : uart1-irq-init ( -- )  \ initialise the USART1 using a receive ring buffer
   uart1-init
   uart1-RX-ring UART1-RX-buffer-size init-ring
+  uart1-TX-ring UART1-TX-buffer-size init-ring
   ['] uart1-irq-handler irq-usart1 !
   37 32 - bit NVIC-EN1R !  \ enable USART1 interrupt 37
   \ http://www.st.com/stonline/products/literature/rm/13902.pdf
