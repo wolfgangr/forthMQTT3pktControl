@@ -117,7 +117,7 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
   \ 27.3.3 pg 794/1137 ff  An interrupt is generated if the RXNEIE bit is set.
 
   uart1-RX-irq-enable
-  \ uart1-TX-irq-enable 
+  uart1-TX-irq-enable 
 ;
 
 : uart1-irq-key? ( -- f )  \ input check for interrupt-driven ring buffer
@@ -147,7 +147,7 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
 : uart1-irq_ulize  
   ['] uart1-irq-key?  hook-key?  !
   ['] uart1-irq-key   hook-key   !
-  \ ['] uart1-irq-emit? hook-emit? !
-  \ ['] uart1-irq-emit  hook-emit  !
+  ['] uart1-irq-emit? hook-emit? !
+  ['] uart1-irq-emit  hook-emit  !
   uart1-irq-init
 ;
