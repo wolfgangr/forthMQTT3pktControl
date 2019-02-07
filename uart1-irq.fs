@@ -7,6 +7,8 @@
 \ https://github.com/jeelabs/embello/blob/master/explore/1608-forth/flib/stm32f1/uart2.fs
 
 
+#128 constant UART1-RX-buffer-size
+
 \ $40004400 constant USART2
 \ https://www.st.com/en/microcontrollers/stm32f103c8.html
 \ pg 38 
@@ -50,23 +52,37 @@ $40013800  USART1
 : uart1-key ( -- c ) begin uart-key? until  USART1-DR @ ;
 : uart1-emit? ( -- f ) pause 1 7 lshift USART1-SR bit@ ;
 : uart1-emit ( c -- ) begin uart-emit? until USART1-DR ! ; 
-  
+
+\ wrapper for portability
+\ mecrisp-stellaris-2.4.8/mecrisp-stellaris-source/common/stm-terminal.s 
+\ serial-emit serial-key serial-emit? serial-key?
+: sys-key?  serial-key?  ;
+: sys-key   serial-key   ;
+: sys-emit? serial-emit? ;
+: sys-emit  serial-emit  ; 
+
+
   
 \ ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \ derived from
 \ https://github.com/jeelabs/embello/blob/master/explore/1608-forth/flib/stm32f1/uart2-irq.fs
 
-128 4 + buffer: uart1-ring
+UART1-RX-buffer-size 4 + buffer: uart1-ring
 
-: uart1-irq-handler ( -- )  \ handle the USART receive interrupt
+: uart1-RX-irq-handler ( -- )  \ handle the USART receive interrupt
   USART1-DR @  \ will drop input when there is no room left
   uart1-ring dup ring? if >ring else 2drop then ;
+
+\ prepare for combined RX / TX irq
+: uart1-irq-handler
+  sys-key? IF uart1-RX-irq-handler THEN
+; 
 
 $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
 
 : uart1-irq-init ( -- )  \ initialise the USART1 using a receive ring buffer
   uart1-init
-  uart1-ring 128 init-ring
+  uart1-ring UART1-RX-buffer-size init-ring
   ['] uart1-irq-handler irq-usart1 !
   37 32 - bit NVIC-EN1R !  \ enable USART1 interrupt 37
   \ http://www.st.com/stonline/products/literature/rm/13902.pdf
