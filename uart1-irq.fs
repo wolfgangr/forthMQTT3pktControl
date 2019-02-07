@@ -54,6 +54,13 @@ $40013800  USART1
 : uart1-emit? ( -- f ) pause 1 7 lshift USART1-SR bit@ ;
 : uart1-emit ( c -- ) begin uart-emit? until USART1-DR ! ; 
 
+
+\ keep the old handlers - why? - do we ever need them?
+hook-key   @ constant polling-key
+hook-key?  @ constant polling-key?
+hook-emit  @ constant polling-emit
+hook-emit? @ constant polling-emit?
+
 \ wrapper for portability
 \ mecrisp-stellaris-2.4.8/mecrisp-stellaris-source/common/stm-terminal.s 
 \ serial-emit serial-key serial-emit? serial-key?
@@ -73,7 +80,7 @@ UART1-TX-buffer-size 4 + buffer: uart1-TX-ring
 
 
 : uart1-RX-irq-handler ( -- )  \ handle the USART receive interrupt
-  USART1-DR @  \ will drop input when there is no room left
+  sys-key  \ will drop input when there is no room left
   uart1-RX-ring dup ring? if >ring else 2drop then ;
 
 \ prepare for combined RX / TX irq
@@ -98,8 +105,7 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
 : uart1-irq-key ( -- c )  \ input read from interrupt-driven ring buffer
   begin uart1-irq-key? until  uart1-RX-ring ring> ;
 
-hook-key @ constant polling-key
-hook-key? @ constant polling-key?
+
   
 \ switch running REPL to use irq buffered input queue
 : uart1-irq_ulize  
