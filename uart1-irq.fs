@@ -83,9 +83,26 @@ UART1-TX-buffer-size 4 + buffer: uart1-TX-ring
   sys-key  \ will drop input when there is no room left
   uart1-RX-ring dup ring? if >ring else 2drop then ;
 
-\ prepare for combined RX / TX irq
+\ 5 bit USART1-CR1 bis!  \ set RXNEIE  
+\ 7 bit USART1-CR1 bis!  \ set TXEIE
+: uart1-RX-irq-enable  5 bit USART1-CR1 bis! ;
+: uart1-RX-irq-disable 5 bit USART1-CR1 bic! ;
+: uart1-TX-irq-enable  7 bit USART1-CR1 bis! ;
+: uart1-TX-irq-disable 7 bit USART1-CR1 bic! ;
+ 
+: uart1-TX-irq-handler
+  uart1-RX-ring dup ring# 0<> if 
+    ring> sys-emit 
+  else 
+    uart1-TX-irq-disable 
+  then
+;
+  
+  
+\ combined RX / TX irq - check irq reason
 : uart1-irq-handler
-  sys-key? IF uart1-RX-irq-handler THEN
+  sys-key?  IF uart1-RX-irq-handler THEN
+  sys-emit? IF uart1-TX-irq-handler THEN
 ; 
 
 $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
@@ -97,19 +114,39 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
   37 32 - bit NVIC-EN1R !  \ enable USART1 interrupt 37
   \ http://www.st.com/stonline/products/literature/rm/13902.pdf
   \ 27.3.3 pg 794/1137 ff  An interrupt is generated if the RXNEIE bit is set.
-  5 bit USART1-CR1 bis!  \ set RXNEIE
+
+  uart1-RX-irq-enable
+  uart1-TX-irq-enable 
 ;
 
 : uart1-irq-key? ( -- f )  \ input check for interrupt-driven ring buffer
-  pause uart1-RX-ring ring# 0<> ;
+  pause uart1-RX-ring ring# 0<> 
+;
+
 : uart1-irq-key ( -- c )  \ input read from interrupt-driven ring buffer
-  begin uart1-irq-key? until  uart1-RX-ring ring> ;
+  begin uart1-irq-key? until  uart1-RX-ring ring> 
+;
 
+: uart1-irq-emit? ( -- f )   
+  pause uart1-TX-ring ring?   
+;
 
+: uart1-irq-emit-noblock ( c -- ) 
+  \ silently discard if full, app might better check before
+  uart1-TX-ring dup ring? if >ring else 2drop then 
+  uart1-TX-irq-enable
+; 
+
+\ blocking variant mimics the standard behaviour
+: uart1-irq-emit
+  BEGIN uart1-irq-emit? UNTIL uart1-irq-emit-noblock 
+;
   
 \ switch running REPL to use irq buffered input queue
 : uart1-irq_ulize  
-  ['] uart1-irq-key? hook-key? !
-  ['] uart1-irq-key  hook-key  !
+  ['] uart1-irq-key?  hook-key?  !
+  ['] uart1-irq-key   hook-key   !
+  \ ['] uart1-irq-emit? hook-emit? !
+  \ ['] uart1-irq-emit  hook-emit  !
   uart1-irq-init
 ;
