@@ -102,7 +102,7 @@ UART1-TX-buffer-size 4 + buffer: uart1-TX-ring
 \ combined RX / TX irq - check irq reason
 : uart1-irq-handler
   sys-key?  IF uart1-RX-irq-handler THEN
-  sys-emit? IF uart1-TX-irq-handler THEN
+  \ sys-emit? IF uart1-TX-irq-handler THEN
 ; 
 
 $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
@@ -117,7 +117,7 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
   \ 27.3.3 pg 794/1137 ff  An interrupt is generated if the RXNEIE bit is set.
 
   uart1-RX-irq-enable
-  uart1-TX-irq-enable 
+  \ uart1-TX-irq-enable 
 ;
 
 : uart1-irq-key? ( -- f )  \ input check for interrupt-driven ring buffer
