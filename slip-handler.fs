@@ -53,7 +53,7 @@ false variable SLIP-overrun
 \  uart1-RX-ring dup ring? if >ring else 2drop then ;
   
 \  discard new input on overrun and keep a flag
-: SLIP-write-to-RX
+: SLIP-write-to-RX ( char -- )
   uart1-RX-ring dup 
   ring? if  >ring  
   else  2drop true RX-overrun !  then
@@ -67,10 +67,56 @@ false variable SLIP-overrun
   then >ring ; 
 ;
 
+\ toggle false<->true in address e.g variable
+: toggle ( addr -- ) dup @ 0= swap ! ;
+
 : SLIP-RX-irq-handler ( -- )
-  sys-key
+  \  read right from bare metal
+  sys-key     ( char --) 
   
+  \ we had escape the last time, process it now
+  SLIP-escaped if 
+    SLIP-status if SLIP-write-to-SLIP
+      else SLIP-write-to-RX 
+      then  
+    false SLIP-escaped !
+    exit
+  then
   
+  \  do we have a new escape?
+  dup SLIP_ESC = if 
+    SLIP-escaped toggle
+    drop exit
+  then 
+  
+  \ perform slip millis check ############
+  \ perform slip length check #############
+  
+  \ SLIP_END toggles status but gets not recorded otherwise
+  \ ###### to do .... error checking ad ehader
+  dup SLIP_END = if
+    SLIP-status if
+        false SLIP-status !
+        \ do the closing stuff
+        \ #####################
+      else
+        true SLIP-status !
+        0 SLIP-write-to-SLIP \ place for length
+        0 SLIP-write-to-SLIP \ place for flags
+        0 SLIP-msg-count !
+        millis SLIP-lastchar-millis !
+      then
+    drop exit
+  then
+  
+  \ nothing special
+  SLIP-status if
+    SLIP-write-to-SLIP
+    1 SLIP-msg-count +!
+    millis SLIP-lastchar-millis !
+  else
+    SLIP-write-to-RX
+  then
   
   
 ;
