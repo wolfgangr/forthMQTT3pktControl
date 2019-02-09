@@ -79,9 +79,9 @@ UART1-RX-buffer-size 4 + buffer: uart1-RX-ring
 UART1-TX-buffer-size 4 + buffer: uart1-TX-ring
 
 
-: uart1-RX-irq-handler ( -- )  \ handle the USART receive interrupt
-  sys-key  \ will drop input when there is no room left
-  uart1-RX-ring dup ring? if >ring else 2drop then ;
+\ restore saved interrupt flag  - companion to eint?
+: eint! ( flag -- ) if eint else dint then ;
+
 
 \ 5 bit USART1-CR1 bis!  \ set RXNEIE  
 \ 7 bit USART1-CR1 bis!  \ set TXEIE
@@ -89,13 +89,21 @@ UART1-TX-buffer-size 4 + buffer: uart1-TX-ring
 : uart1-RX-irq-disable 5 bit USART1-CR1 bic! ;
 : uart1-TX-irq-enable  7 bit USART1-CR1 bis! ;
 : uart1-TX-irq-disable 7 bit USART1-CR1 bic! ;
- 
+
+
+: uart1-RX-irq-handler ( -- )  \ handle the USART receive interrupt
+  sys-key  \ will drop input when there is no room left
+  uart1-RX-ring dup ring? if >ring else 2drop then ;
+
+  
 : uart1-TX-irq-handler
+  \ dint     \ our buffer looks screwed, and sometimes wrong chars...
   uart1-TX-ring dup ring# 0<> if 
     ring> sys-emit 
   else 
     drop uart1-TX-irq-disable 
   then
+  \ eint
 ;
   
   
@@ -134,7 +142,9 @@ $E000E104 constant NVIC-EN1R \ IRQ 32 to 63 Set Enable Register
 
 : uart1-irq-emit-noblock ( c -- ) 
   \ silently discard if full, app might better check before
+  eint? dint >r
   uart1-TX-ring dup ring? if >ring else 2drop then 
+  r> eint!
   uart1-TX-irq-enable
 ; 
 

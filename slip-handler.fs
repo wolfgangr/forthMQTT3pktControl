@@ -76,6 +76,7 @@ false variable SLIP-overrun
 \ ..... - len +1 ... flag byte
 \ https://github.com/jeelabs/embello/blob/master/explore/1608-forth/flib/any/ring.fs#L4
 
+\ calculate address to offaet poke into ring buffer
 : ring-poker ( ring-addr 1|2 offset -- byte-addr)
   swap 2 pick + @ + ( ring-addr raw-offset -- )
   over @ and  ( ring-addr real-offset -- )
